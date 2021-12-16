@@ -1,0 +1,26 @@
+{
+  "id": "bf234710-bd91-4cf8-bbc3-148cd4f1a2e0",
+  "name": "Small Batch BC18",
+  "publisher": "CBR Technlogy",
+  "version": "18.0.0.47",
+  "brief": "",
+  "description": "",
+  "privacyStatement": "",
+  "EULA": "",
+  "help": "",
+  "url": "",
+  "logo": "",
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "1.0.0.0",
+  "application": "18.0.0.0",
+  "idRanges": [
+    {
+      "from": 50000,
+      "to": 99999
+    }
+  ],
+  "contextSensitiveHelpUrl": "https://SmallBatch.com/help/",
+  "showMyCode": true,
+  "runtime": "7.0"
+}
