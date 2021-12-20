@@ -24,7 +24,18 @@ pageextension 50009 ExtendSalesOrderList extends "Sales Order List"
 
     actions
     {
-        // Add changes to page actions here
+        addafter(Dimensions)
+        {
+            action("Open Sales Order Detail Page")
+            {
+                ApplicationArea = All;
+                Caption = 'Open Sales Order Detail Page';
+                Image = OrderList;
+                Promoted = true;
+                PromotedCategory = Process;
+                RunObject = page "Open Sales Order Detail Page";
+            }
+        }
     }
 
     var
