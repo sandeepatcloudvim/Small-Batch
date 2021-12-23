@@ -13,11 +13,21 @@ pageextension 50028 CBR_ExtendPostedAssemblyOrders extends "Posted Assembly Orde
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Assembly Variance';
-                RunObject = page "Assembly Variance";
                 Promoted = true;
                 PromotedIsBig = true;
                 Image = AssemblyOrder;
                 PromotedCategory = Process;
+                RunObject = page "Assembly Variance";
+            }
+            action("Assembly Resource Variance")
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Assembly Resource Variance';
+                Promoted = true;
+                PromotedIsBig = true;
+                Image = AssemblyOrder;
+                PromotedCategory = Process;
+                RunObject = page "Assembly Resource Variance";
             }
         }
     }

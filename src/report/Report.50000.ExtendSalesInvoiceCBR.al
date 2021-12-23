@@ -463,6 +463,7 @@ report 50000 "Sales Invoice CBR"
             column(ExternalDocumentNo_Lbl; FieldCaption("External Document No."))
             {
             }
+
             dataitem(Line; "Sales Invoice Line")
             {
                 DataItemLink = "Document No." = FIELD("No.");
@@ -1135,6 +1136,14 @@ report 50000 "Sales Invoice CBR"
                 column(AmountExemptFromSalesTaxLbl; AmtExemptfromSalesTaxLbl)
                 {
                 }
+                column(BalanceDue; Format(BalanceDue, 0, AutoFormat.ResolveAutoFormat("Auto Format"::AmountFormat, Header."Currency Code")))
+                {
+
+                }
+                column(Payment; Format(PaymentInvoiced, 0, AutoFormat.ResolveAutoFormat("Auto Format"::AmountFormat, Header."Currency Code")))
+                {
+
+                }
 
                 trigger OnPreDataItem()
                 begin
@@ -1144,6 +1153,19 @@ report 50000 "Sales Invoice CBR"
                     end else begin
                         TotalAmountExclInclVATTextValue := TotalInclVATText;
                         TotalAmountExclInclVATValue := TotalAmountInclVAT;
+                    end;
+                end;
+
+                trigger OnAfterGetRecord()
+                begin
+                    recCLE.Reset();
+                    recCLE.SetRange("Document Type", recCLE."Document Type"::Invoice);
+                    recCLE.SetRange("Document No.", Header."No.");
+                    if recCLE.FindFirst() then begin
+                        recCLE.CalcFields("Remaining Amount");
+                        recCLE.CalcFields("Original Amount");
+                        BalanceDue := recCLE."Remaining Amount";
+                        PaymentInvoiced := recCLE."Original Amount" - recCLE."Remaining Amount";
                     end;
                 end;
             }
@@ -1207,6 +1229,8 @@ report 50000 "Sales Invoice CBR"
                         RemainingAmountTxt := '';
 
                 OnAfterGetSalesHeader(Header);
+
+
 
                 TotalSubTotal := 0;
                 TotalInvDiscAmount := 0;
@@ -1370,6 +1394,9 @@ report 50000 "Sales Invoice CBR"
         DummyCompanyInfo: Record "Company Information";
         SalesSetup: Record "Sales & Receivables Setup";
         Cust: Record Customer;
+        recCLE: Record "Cust. Ledger Entry";
+        BalanceDue: Decimal;
+        PaymentInvoiced: Decimal;
         RespCenter: Record "Responsibility Center";
         VATClause: Record "VAT Clause";
         TempLineFeeNoteOnReportHist: Record "Line Fee Note on Report Hist." temporary;

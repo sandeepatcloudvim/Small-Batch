@@ -961,6 +961,12 @@ End Function
         <Field Name="AmountExemptFromSalesTaxLbl">
           <DataField>AmountExemptFromSalesTaxLbl</DataField>
         </Field>
+        <Field Name="BalanceDue">
+          <DataField>BalanceDue</DataField>
+        </Field>
+        <Field Name="Payment">
+          <DataField>Payment</DataField>
+        </Field>
       </Fields>
       <Query>
         <DataSourceName>DataSource</DataSourceName>
