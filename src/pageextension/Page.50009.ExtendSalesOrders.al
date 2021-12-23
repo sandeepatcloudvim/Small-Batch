@@ -33,7 +33,7 @@ pageextension 50009 ExtendSalesOrderList extends "Sales Order List"
                 Image = OrderList;
                 Promoted = true;
                 PromotedCategory = Process;
-                RunObject = page "Open Sales Order Detail Page";
+                RunObject = page "Sales Order Detail Page";
             }
         }
     }

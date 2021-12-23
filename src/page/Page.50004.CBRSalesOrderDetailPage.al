@@ -1,7 +1,7 @@
-page 50006 "Open Sales Order Detail Page"
+page 50006 "Sales Order Detail Page"
 {
     Editable = false;
-    Caption = 'Open Sales Order Detail Page';
+    Caption = 'Sales Order Detail Page';
     PageType = List;
     SourceTable = "Sales Line";
     UsageCategory = Administration;
@@ -84,6 +84,11 @@ page 50006 "Open Sales Order Detail Page"
                     ApplicationArea = All;
                     Caption = 'Item Description';
                 }
+                field(Item_Category; RecItem."Item Category Code")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Item Category Code';
+                }
 
                 field(Qty; Rec.Quantity)
                 {
@@ -110,12 +115,6 @@ page 50006 "Open Sales Order Detail Page"
     {
 
     }
-    trigger OnOpenPage()
-    var
-    begin
-        Rec.CalcFields(Status);
-        Rec.SetFilter(Status, '%1', Rec.Status::Open);
-    end;
 
     trigger OnAfterGetRecord()
     begin
