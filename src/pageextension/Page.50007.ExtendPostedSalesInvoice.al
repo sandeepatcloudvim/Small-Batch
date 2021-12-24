@@ -31,6 +31,16 @@ pageextension 50007 ExtendPostedSalesInvoices extends "Posted Sales Invoices"
                 Image = ViewPostedOrder;
                 PromotedCategory = Process;
             }
+            action("Sales Invoice Detail Page")
+            {
+                ApplicationArea = All;
+                Caption = 'Sales Invoice Detail Page';
+                Image = Invoice;
+                Promoted = true;
+                PromotedIsBig = true;
+                PromotedCategory = Process;
+                RunObject = page "Sales Invoice Detail Page";
+            }
         }
     }
 
