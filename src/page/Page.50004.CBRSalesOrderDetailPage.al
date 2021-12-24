@@ -1,4 +1,4 @@
-page 50006 "Sales Order Detail Page"
+page 50004 "Sales Order Detail Page"
 {
     Editable = false;
     Caption = 'Sales Order Detail Page';

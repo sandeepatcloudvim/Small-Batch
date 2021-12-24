@@ -26,10 +26,10 @@ pageextension 50009 ExtendSalesOrderList extends "Sales Order List"
     {
         addafter(Dimensions)
         {
-            action("Open Sales Order Detail Page")
+            action("Sales Order Detail Page")
             {
                 ApplicationArea = All;
-                Caption = 'Open Sales Order Detail Page';
+                Caption = 'Sales Order Detail Page';
                 Image = OrderList;
                 Promoted = true;
                 PromotedCategory = Process;
