@@ -12,6 +12,13 @@ pageextension 50008 Extends_SalesOrder extends "Sales Order"
                 ApplicationArea = All;
             }
         }
+        addafter("Payment Discount %")
+        {
+            field("Credits Applied"; Rec."Credits Applied")
+            {
+                ApplicationArea = All;
+            }
+        }
 
         modify("Sell-to Customer Name")
         {
@@ -58,7 +65,21 @@ pageextension 50008 Extends_SalesOrder extends "Sales Order"
     actions
     {
 
-
+        addafter("Create Inventor&y Put-away/Pick")
+        {
+            action("Retrieve Credits")
+            {
+                ApplicationArea = All;
+                Caption = 'Retrieve Credits';
+                Promoted = true;
+                PromotedCategory = Process;
+                Image = TransferFunds;
+                trigger OnAction()
+                begin
+                    UpdateCreditsAppliedValue(Rec."Sell-to Customer No.");
+                end;
+            }
+        }
     }
 
     var
@@ -68,4 +89,22 @@ pageextension 50008 Extends_SalesOrder extends "Sales Order"
         ShipToAddressList: page "Ship-to Address List";
         recordCount: Integer;
         FormatAddress: Codeunit "Format Address";
+        CreditAmount: Decimal;
+
+    local procedure UpdateCreditsAppliedValue(CustomerNo: Code[20])
+    var
+        recCustLedgerEntry: Record "Cust. Ledger Entry";
+    begin
+        Clear(CreditAmount);
+        recCustLedgerEntry.Reset();
+        recCustLedgerEntry.SetFilter("Document Type", '%1', recCustLedgerEntry."Document Type"::"Credit Memo");
+        recCustLedgerEntry.SetRange("Customer No.", CustomerNo);
+        if recCustLedgerEntry.FindSet() then
+            repeat
+                recCustLedgerEntry.CalcFields("Remaining Amount");
+                CreditAmount := CreditAmount + Abs(recCustLedgerEntry."Remaining Amount");
+            until recCustLedgerEntry.Next() = 0;
+        Rec."Credits Applied" := CreditAmount;
+        Rec.Modify();
+    end;
 }

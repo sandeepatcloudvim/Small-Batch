@@ -17,6 +17,11 @@ tableextension 50005 ExtendSalesHeader extends "Sales Header"
             DataClassification = CustomerContent;
             Caption = 'Create Date';
         }
+        field(50002; "Credits Applied"; Decimal)
+        {
+            DataClassification = CustomerContent;
+            Caption = 'Credits Applied';
+        }
 
 
     }
