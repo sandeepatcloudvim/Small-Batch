@@ -2,6 +2,7 @@ pageextension 50001 ExtendAssemblyOrders_CBR extends "Assembly Orders"
 {
     layout
     {
+
         addbefore("Item No.")
         {
             field(Reference; Rec.Reference)
@@ -46,4 +47,7 @@ pageextension 50001 ExtendAssemblyOrders_CBR extends "Assembly Orders"
 
     var
         myInt: Integer;
+
+
+
 }

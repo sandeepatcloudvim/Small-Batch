@@ -41,7 +41,7 @@ table 50000 "CBR Item Sales History"
         field(12; "Bill-to Zip"; Code[20])
         {
         }
-        field(13; "Ship-to Address"; Text[50])
+        field(13; "Ship-to Address"; Text[100])
         {
         }
         field(19; "Document Date"; Date)
@@ -136,7 +136,7 @@ table 50000 "CBR Item Sales History"
         field(51; "Margin Amount"; Decimal)
         {
         }
-        field(52; "Ship-to Address2"; Text[50])
+        field(52; "Ship-to Address2"; Text[100])
         {
         }
         field(53; "Ship-to City"; Text[30])
@@ -299,7 +299,7 @@ table 50000 "CBR Item Sales History"
             "Customer Price Group" := SInvHead."Customer Price Group";
             "Item No." := SInvLine."No.";
             "Item Description" := SInvLine.Description;
-            "Cross Reference No" := SInvLine."Cross-Reference No.";
+            "Cross Reference No" := SInvLine."Item Reference No.";
             "Unit of Measure Code" := SInvLine."Unit of Measure Code";
             "Qty. per Unit of Measure" := SInvLine."Qty. per Unit of Measure";
             "Qty Ordered" := GetOriginalOrderedQty(SInvLine."Order No.", SInvLine."Order Line No.", SInvLine."No.");
@@ -307,14 +307,16 @@ table 50000 "CBR Item Sales History"
             "Qty Invoiced" := SInvLine.Quantity;
             "Unit Price" := SInvLine."Unit Price";
             "Extended Price" := SInvLine.Quantity * "Unit Price";
+            "Unit Cost (Item)" := Item."Unit Cost";
             "Unit Cost (Invoice)" := SInvLine."Unit Cost";
-            if Item."Unit Cost" > 0 then begin
-                "Unit Cost (Item)" := Item."Unit Cost";
-                "Extended Cost" := ((SInvLine.Quantity * SInvLine."Qty. per Unit of Measure") * Item."Unit Cost");
-            end else begin
-                "Unit Cost (Item)" := SInvLine."Unit Cost";
+            // if Item."Unit Cost" > 0 then begin
+            //     "Unit Cost (Item)" := Item."Unit Cost";
+            //     "Extended Cost" := ((SInvLine.Quantity * SInvLine."Qty. per Unit of Measure") * Item."Unit Cost");
+            // end else begin
+            //"Unit Cost (Item)" := SInvLine."Unit Cost";
+            if SInvLine."Unit Cost" > 0 then
                 "Extended Cost" := ((SInvLine.Quantity * SInvLine."Qty. per Unit of Measure") * SInvLine."Unit Cost");
-            end;
+            // end;
 
             if UpdateTotalWeight(Item."No.", Item."Base Unit of Measure") <> 0 then
                 "Total Weight" := (SInvLine.Quantity * UpdateTotalWeight(Item."No.", Item."Base Unit of Measure"));
@@ -375,20 +377,22 @@ table 50000 "CBR Item Sales History"
             "Customer Price Group" := SCreditHead."Customer Price Group";
             "Item No." := SCreditLine."No.";
             "Item Description" := SCreditLine.Description;
-            "Cross Reference No" := SCreditLine."Cross-Reference No.";
+            "Cross Reference No" := SCreditLine."Item Reference No.";
             "Unit of Measure Code" := SCreditLine."Unit of Measure Code";
             "Qty. per Unit of Measure" := SCreditLine."Qty. per Unit of Measure";
             "Qty Invoiced" := -(SCreditLine.Quantity);
             "Unit Price" := (SCreditLine."Unit Price");
             "Extended Price" := ("Qty Invoiced" * "Unit Price");
+            "Unit Cost (Item)" := Item."Unit Cost";
             "Unit Cost (Invoice)" := SCreditLine."Unit Cost";
-            if Item."Unit Cost" > 0 then begin
-                "Unit Cost (Item)" := Item."Unit Cost";
-                "Extended Cost" := -((SCreditLine.Quantity * SCreditLine."Qty. per Unit of Measure") * Item."Unit Cost");
-            end else begin
-                "Unit Cost (Item)" := SCreditLine."Unit Cost";
+            // if Item."Unit Cost" > 0 then begin
+            //     "Unit Cost (Item)" := Item."Unit Cost";
+            //     "Extended Cost" := -((SCreditLine.Quantity * SCreditLine."Qty. per Unit of Measure") * Item."Unit Cost");
+            // end else begin
+            //     "Unit Cost (Item)" := SCreditLine."Unit Cost";
+            if SCreditLine."Unit Cost" > 0 then
                 "Extended Cost" := -((SCreditLine.Quantity * SCreditLine."Qty. per Unit of Measure") * SCreditLine."Unit Cost");
-            end;
+            //end;
 
             if UpdateTotalWeight(Item."No.", Item."Base Unit of Measure") <> 0 then
                 "Total Weight" := (SCreditLine.Quantity * UpdateTotalWeight(Item."No.", Item."Base Unit of Measure"));

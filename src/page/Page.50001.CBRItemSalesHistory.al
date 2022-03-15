@@ -160,7 +160,7 @@ page 50001 "Item Sales History"
                 {
                     ApplicationArea = All;
                 }
-                field("Unit Cost (Item)"; Rec."Unit Cost (Item)")
+                field("Unit Cost (Invoice)"; Rec."Unit Cost (Invoice)")
                 {
                     ApplicationArea = All;
                 }

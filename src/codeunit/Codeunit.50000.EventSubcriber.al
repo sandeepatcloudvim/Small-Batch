@@ -1,6 +1,7 @@
 codeunit 50000 EventSubcriber_SmallBatch
 {
-    Permissions = tabledata 17 = rimd;
+    Permissions = tabledata 17 = rimd, tabledata 5802 = rimd;
+
 
     trigger OnRun()
     begin
@@ -190,6 +191,16 @@ codeunit 50000 EventSubcriber_SmallBatch
             UNTIL GLEntry.NEXT = 0;
     end;
 
+    procedure GetExternalDocNo(DocNo: Code[20]): Text[50]
+    var
+        recAssembly: Record "Assembly Header";
+    begin
+        recAssembly.Reset();
+        recAssembly.SetRange("No.", DocNo);
+        if recAssembly.FindFirst() then
+            exit(recAssembly."External Document No.");
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"TransferOrder-Post Shipment", 'OnAfterInsertTransShptHeader', '', true, true)]
     local procedure UpdateShipmentReference(VAR TransferHeader: Record "Transfer Header"; VAR TransferShipmentHeader: Record "Transfer Shipment Header")
     var
@@ -235,16 +246,52 @@ codeunit 50000 EventSubcriber_SmallBatch
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Assembly-Post", 'OnBeforePostItemConsumption', '', true, true)]
+    local procedure UpdateExternalDocNoToItemCons(VAR AssemblyHeader: Record "Assembly Header"; VAR AssemblyLine: Record "Assembly Line"; VAR ItemJournalLine: Record "Item Journal Line")
+    begin
+        ItemJournalLine."External Document No." := AssemblyHeader."External Document No.";
+    end;
+
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Assembly-Post", 'OnAfterCreateItemJnlLineFromAssemblyHeader', '', true, true)]
+    local procedure UpdateExternalDocNoToItemJnlLine(VAR ItemJournalLine: Record "Item Journal Line"; AssemblyHeader: Record "Assembly Header")
+    begin
+        ItemJournalLine."External Document No." := AssemblyHeader."External Document No.";
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Assembly-Post", 'OnAfterCreateItemJnlLineFromAssemblyLine', '', true, true)]
+    local procedure UpdateExternalDocNoToItemJnlLine1(VAR ItemJournalLine: Record "Item Journal Line"; AssemblyLine: Record "Assembly Line")
+    var
+
+    begin
+        ItemJournalLine."External Document No." := GetExternalDocNo(AssemblyLine."Document No.");
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Assembly-Post", 'OnAfterCreateResJnlLineFromItemJnlLine', '', true, true)]
+    local procedure UpdateExternalDocNoToResJournalLine(VAR ResJournalLine: Record "Res. Journal Line"; ItemJournalLine: Record "Item Journal Line"; AssemblyLine: Record "Assembly Line")
+    begin
+        ResJournalLine."External Document No." := ItemJournalLine."External Document No.";
+    end;
+
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Assembly-Post", 'OnAfterCreateWhseJnlLineFromItemJnlLine', '', true, true)]
+    local procedure UpdateExternalDocNoToWhseJnlLine(VAR WarehouseJournalLine: Record "Warehouse Journal Line"; ItemJournalLine: Record "Item Journal Line")
+    begin
+        WarehouseJournalLine."External Document No." := ItemJournalLine."External Document No.";
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Assembly-Post", 'OnBeforePostItemConsumption', '', true, true)]
     local procedure UpdateExternalDocNo(VAR AssemblyHeader: Record "Assembly Header"; VAR AssemblyLine: Record "Assembly Line"; VAR ItemJournalLine: Record "Item Journal Line")
     begin
         ItemJournalLine."External Document No." := AssemblyHeader."External Document No.";
     end;
+
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Assembly-Post", 'OnAfterCreateItemJnlLineFromAssemblyHeader', '', true, true)]
     local procedure UpdateExternalDoc(VAR ItemJournalLine: Record "Item Journal Line"; AssemblyHeader: Record "Assembly Header")
     begin
         ItemJournalLine."External Document No." := AssemblyHeader."External Document No.";
     end;
+
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnAfterInitItemLedgEntry', '', true, true)]
     local procedure UpdateExternalDocNoToILE(VAR NewItemLedgEntry: Record "Item Ledger Entry"; ItemJournalLine: Record "Item Journal Line"; VAR ItemLedgEntryNo: Integer)
@@ -258,10 +305,65 @@ codeunit 50000 EventSubcriber_SmallBatch
         ItemLedgerEntry."External Document No." := ItemJournalLine."External Document No.";
     end;
 
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnAfterInsertCapValueEntry', '', true, true)]
+    local procedure UpdateExternalDocNoToVE(VAR ValueEntry: Record "Value Entry"; ItemJnlLine: Record "Item Journal Line")
+    begin
+        ValueEntry."External Document No." := ItemJnlLine."External Document No.";
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnAfterInitValueEntry', '', true, true)]
+    local procedure UpdateExternalDocNoToVE1(VAR ValueEntry: Record "Value Entry"; ItemJournalLine: Record "Item Journal Line"; VAR ValueEntryNo: Integer)
+    begin
+        ValueEntry."External Document No." := ItemJournalLine."External Document No.";
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnAfterPostItemJnlLine', '', true, true)]
     local procedure UpdateExternalDocNoToILE2(VAR ItemJournalLine: Record "Item Journal Line"; ItemLedgerEntry: Record "Item Ledger Entry"; VAR ValueEntryNo: Integer; VAR InventoryPostingToGL: Codeunit "Inventory Posting To G/L")
     begin
         ItemLedgerEntry."External Document No." := ItemJournalLine."External Document No.";
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnAfterFinishPosting', '', true, true)]
+    local procedure UpdateExternalDocNoToGL(var GlobalGLEntry: Record "G/L Entry"; var GLRegister: Record "G/L Register"; var IsTransactionConsistent: Boolean; var GenJournalLine: Record "Gen. Journal Line")
+    var
+        GLentry: Record "G/L Entry";
+        recGLentry: Record "G/L Entry";
+        ExternalDoc: Text[50];
+    begin
+
+        recGLentry.Reset();
+        recGLentry.SetRange("Document No.", GlobalGLEntry."Document No.");
+        recGLentry.SetFilter("External Document No.", '<>%1', '');
+        if recGLentry.FindFirst() then;
+
+        GLentry.Reset();
+        GLentry.SetRange("Document No.", GlobalGLEntry."Document No.");
+        GLentry.SetFilter("External Document No.", '=%1', '');
+        if GLentry.FindSet() then
+            repeat
+                GLentry."External Document No." := recGLentry."External Document No.";
+                GLentry.Modify();
+            until GLentry.Next() = 0;
+
+    end;
+
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Assembly Line Management", 'OnAfterTransferBOMComponent', '', true, true)]
+    local procedure UpdateTollingSubstitutions(var AssemblyLine: Record "Assembly Line"; BOMComponent: Record "BOM Component"; AssemblyHeader: Record "Assembly Header")
+    var
+        TollingSubstit: Record "CBR Tolling Substitutions";
+        recResource: Record Resource;
+    begin
+        TollingSubstit.Reset();
+        TollingSubstit.SetRange("Original Item No.", AssemblyLine."No.");
+        TollingSubstit.SetRange("Location Code", AssemblyHeader."Location Code");
+        if TollingSubstit.FindFirst() then begin
+            recResource.Get(TollingSubstit."Substitute Item No.");
+            AssemblyLine.Validate("No.", TollingSubstit."Substitute Item No.");
+            AssemblyLine.Validate("Unit Cost", recResource."Unit Cost");
+        end;
+
     end;
 
 }

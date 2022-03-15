@@ -2,6 +2,7 @@ pageextension 50000 ExtendAssemblyOrder_CBR extends "Assembly Order"
 {
     layout
     {
+
         modify("Item No.")
         {
             ApplicationArea = All;
@@ -41,4 +42,7 @@ pageextension 50000 ExtendAssemblyOrder_CBR extends "Assembly Order"
 
     var
         myInt: Integer;
+
+
+
 }

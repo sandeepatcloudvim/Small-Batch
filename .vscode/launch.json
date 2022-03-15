@@ -6,7 +6,7 @@
             "type": "al",
             "request": "launch",
             "environmentType": "Sandbox",
-            "environmentName": "Small_Batch_Testing_Sandbox",
+            "environmentName": "Small_Batch_Sandbox_022022",
             "tenant": "402c4440-437f-403b-aaaf-e84f2f25f771",  
             "startupObjectId": 22,
             "startupObjectType": "Page",
