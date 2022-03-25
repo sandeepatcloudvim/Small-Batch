@@ -28,11 +28,13 @@ pageextension 50007 ExtendPostedSalesInvoices extends "Posted Sales Invoices"
             {
                 ApplicationArea = All;
                 Caption = 'Ship-to City';
+
             }
             field("Ship-to County"; Rec."Ship-to County")
             {
                 ApplicationArea = All;
                 Caption = 'Ship-to State';
+                CaptionClass = 'Ship-to State';
             }
             field("Ship-toCountryRegion Code"; Rec."Ship-to Country/Region Code")
             {

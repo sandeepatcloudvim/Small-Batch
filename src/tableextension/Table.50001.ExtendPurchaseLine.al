@@ -9,7 +9,8 @@ tableextension 50001 ExtendPurchaseLine extends "Purchase Line"
                 recPurcLine: Record "Purchase Line";
             begin
                 if Quantity <> 0 then begin
-                    "Amount to Receive" := "Qty. to Receive" * GetUnitCost("No.");
+                    "Amount to Receive" := "Qty. to Receive" * "Direct Unit Cost";
+                    "Amount to Invoice" := "Qty. to Invoice" * "Direct Unit Cost";
                 end;
             end;
 
@@ -20,9 +21,9 @@ tableextension 50001 ExtendPurchaseLine extends "Purchase Line"
             var
             begin
                 if Quantity <> 0 then begin
-                    "Amount to Receive" := "Qty. to Receive" * GetUnitCost("No.");
+                    "Amount to Receive" := "Qty. to Receive" * "Direct Unit Cost";
+                    "Amount to Invoice" := "Qty. to Receive" * "Direct Unit Cost";
                 end;
-
             end;
 
         }
@@ -33,11 +34,14 @@ tableextension 50001 ExtendPurchaseLine extends "Purchase Line"
             var
             begin
                 if "Quantity Received" <> 0 then begin
-                    "Amount Received" := "Quantity Received" * GetUnitCost("No.");
+                    "Amount Received" := "Quantity Received" * "Direct Unit Cost";
+                    "Amount Invoiced" := "Quantity Received" * "Direct Unit Cost";
                 end;
 
             end;
         }
+
+
 
         field(50000; "Amount Received"; Decimal)
         {
@@ -68,6 +72,18 @@ tableextension 50001 ExtendPurchaseLine extends "Purchase Line"
             FieldClass = FlowField;
             CalcFormula = Sum("Purchase Line"."Amount Received" WHERE("Document Type" = filter(Order), "Document No." = FIELD("Document No.")));
 
+        }
+        field(50004; "Amount Invoiced"; Decimal)
+        {
+            DataClassification = CustomerContent;
+            Caption = 'Amount Invoiced';
+            Editable = false;
+        }
+        field(50005; "Amount to Invoice"; Decimal)
+        {
+            DataClassification = CustomerContent;
+            Caption = 'Amount to Invoice';
+            Editable = false;
         }
 
 
